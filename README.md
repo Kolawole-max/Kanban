@@ -1,6 +1,8 @@
 # Kanban
 A customizable Kanban system built from scratch to production level. Built with Django framework.
 
+Kanban is a visual method for managing workflow at the individual, team, and even organizational level. 
+
 ## Description 
 
 This project has four user roles:
@@ -31,6 +33,7 @@ This project includes the following features:
 - Python
 - Django
 - Javascript
+- JQuery
 - HTML
 - CSS
 - SASS
