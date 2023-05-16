@@ -1,0 +1,198 @@
+{% extends "Kanbanapp/layout.html" %}
+{% load static %}
+
+
+{% block title %}
+	<title>Task page</title>
+{% endblock %}
+
+{% block body %}
+
+{% comment %} <section class="ftco-section" style="margin-top: -110px;">
+		
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card">
+                        <h5 class="card-header">Project: {{task.project_id.name}}</h5>
+                        <div class="card-body">
+                              <h5 class="card-title">Task: {{task.name}}</h5>
+                              Priority: <span class="badge badge-danger rounded-pill d-inline">High</span>
+                            <hr>
+                             <p class="card-text">{{task.description}}</p>
+                             <hr>
+                             
+                            <div class="d-flex flex-column comment-section">
+                                {% if comments %}
+                                    {% for comment in comments %}
+                                        <li>{{ comment.description }} <button id="edit_button" data-des="{{comment.description}}" data-id="{{comment.id}}">Edit</button></li>
+                                        <div class="bg-white p-2">
+                                            <div class="d-flex flex-row user-info">
+                                                <div class="d-flex flex-column justify-content-start ml-2"><span class="d-block font-weight-bold name">{{comment.user_id.first_name}} {{comment.user_id.last_name}}</span><span class="date text-black-50">Shared publicly - Jan 2020</span></div>
+                                            </div>
+                                            <div class="mt-2 col-lg-6">
+                                                <p class="comment-text">{{comment.description}}</p>
+                                            </div> 
+                                        </div>
+                                        {% endfor %}
+                                {% endif %}
+                                {% for comment in comments %}
+                                   
+                                {% endfor %}
+
+                                <div class="bg-light p-2">
+                                    <div class="d-flex flex-row align-items-start"><textarea rows="5" cols="60" id="comment_box"></textarea></div>
+                                    <div class="mt-2"><button class="btn btn-primary btn-sm shadow-none" id='send_button' type="button">Post comment</button><button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button></div>
+                                </div>
+
+                                <div>
+                                    <hr>
+                                </div>
+                            </div>
+                      </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section> {% endcomment %}
+
+<section class="ftco-section">
+		
+    {{ request.user.username|json_script:"user" }}
+    {{ request.user.role_id.name|json_script:"role" }}
+    {{ task.id|json_script:"task_id" }}
+    {{ estimate|json_script:"estimate_left" }}
+    {{ task.progress_hours|json_script:"progress_hours" }}
+
+    <div class="container">
+
+        <div class="row justify-content-center" style="margin-top: -70px;">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card">
+                        <h5 class="card-header">Project: {{task.project_id.name}}</h5>
+                        <div class="card-body">
+                              <h5 class="card-title">Task: {{task.name}}</h5>
+                              
+                            <h5 class="card-title-two" id='status'> Task status: {{task.status_id.name}}</h5>
+                            <h5 class="card-title-two">Created at: {{task.created_at}}</h5>
+                              Priority: <span class="badge badge-danger rounded-pill d-inline">{{task.priority.name}}</span>
+                                
+                            <p class="priority-container" >Estimated hours: {{task.estimate_hours}} hour(s)</p>
+                            <p class="priority-container" id='estimated'>Estimated time left: {{estimate}} hour(s)</p>
+
+                            {% if request.user.role_id.name != 'Customers' and estimate != 0 %}
+                            {% comment %} {% if estimate != 0 %} {% endcomment %}
+                            <div class="main" id='plusdiv'>
+                                <input id="plusandminustext" type="number" value=0> hour(s)
+                                <button id="plus">+</button>
+                            </div>
+                            {% endif %}
+                            
+                            <hr>
+                             <p class="card-text">{{task.description}}</p>
+                            <hr>
+                            <h5 class="assignee-heading"> List of assignees</h5>
+                            <table class="table table-striped align-middle mb-0 bg-white">
+                                <thead class="bg-light">
+                                    <tr>
+                                      <th>Name</th>
+                                      <th>Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for assignee in task.assignee_id.all %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                              <img
+                                                  src="https://mdbootstrap.com/img/new/avatars/8.jpg"
+                                                  alt=""
+                                                  style="width: 45px; height: 45px"
+                                                  class="rounded-circle"
+                                                  />
+                                              <div class="ms-3">
+                                                <p class="fw-bold mb-1">{{assignee.first_name}} {{assignee.last_name}}</p>
+                                                <p class="text-muted mb-0">{{assignee.email}}</p>
+                                              </div>
+                                            </div>
+                                          </td>
+                                          
+                                          <td>
+                                            <p class="fw-normal mb-1">Software engineer</p>
+                                            <p class="text-muted mb-0">{{assignee.role_id.name}}</p>
+                                          </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            
+                            
+                            <hr>
+
+                            <div class="container mt-5 mb-5">
+                                <div class="d-flex justify-content-center row">
+                                    <div class="d-flex flex-column col-md-8" style="margin-top: -30px;">
+                                        <h5 class="assignee-heading"> COMMENTS </h5>
+                                        <div class="coment-bottom bg-white p-2 px-4">
+
+                                            {% for comment in comments%}
+
+                                                <div class="commented-section mt-2" id='div{{comment.id}}'>
+                                                    <div class="d-flex flex-row align-items-center commented-user">
+                                                        <h5 class="mr-2">{{comment.user_id.first_name}} {{comment.user_id.last_name}}</h5><span class="dot mb-1"></span><span class="mb-1 ml-2">{{comment.created_at}}</span></div>
+                                                    <div class="comment-text-sm"><span>{{comment.description}}</span></div>
+                                                    {% if request.user.role_id.name != 'Customers' and request.user == comment.user_id %}
+                                                        <div class="reply-section" id='comment_div'>
+                                                            <div class="d-flex flex-row align-items-center voting-icons">
+                                                                <span class="dot ml-2"></span>
+                                                                <a class="ml-2 mt-1" style='color: red;' id='editbutton' data-des="{{comment.description}}" data-id="{{comment.id}}">Edit</a>
+                                                                <span class="dot ml-2"></span>
+                                                                <a class="ml-2 mt-1" id='delete_button' data-id="{{comment.id}}" style='color: red;'>Delete</a>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                    <hr>
+                                                </div>
+                                                
+                                            {% endfor %}  
+                                            {% if request.user.role_id.name != "Customers" %}
+                                            <div class="bg-light p-2" style="margin-top: 30px;">
+                                                <div class="d-flex flex-row align-items-start">
+                                                    <textarea rows="5" cols="60" name='comment_box' id="comment_box" placeholder="Comment here...."></textarea>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <button class="btn btn-primary btn-sm shadow-none" href='#' name='send_button' id='send_button' type="button">Post comment</button>
+                                                    <button class="btn btn-primary btn-sm shadow-none" href='' name='edit_button' style="visibility: hidden;" id='edit_button' type="button">Edit comment</button>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                            </div>
+                            
+                      </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+
+{% endblock %}
+
+
+{% block js %}
+    <script src="{% static 'Kanbanapp/task.js' %}"></script>
+{% endblock %}

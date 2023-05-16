@@ -1,0 +1,68 @@
+{% extends "Kanbanapp/layout.html" %}
+{% load static %}
+
+{% block title %}
+	<title>Projects Board</title>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="h3 mb-3" style="color: white">Welcome, {{request.user.first_name}}</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center mb-5">
+            
+            <h3 style="color: white">Here, you'll find all projects.</h3>
+        </div>
+    </div>
+
+    {% for project in projects %}
+    <div class="card text-center">
+        <div class="card-header">
+            <div class="card-actions float-right">
+                <div class="dropdown show">
+                    <a href="#" data-toggle="dropdown" data-display="static">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <circle cx="19" cy="12" r="1"></circle>
+                            <circle cx="5" cy="12" r="1"></circle>
+                        </svg>
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-right">
+                        {% if request.user.role_id.name == 'Administrators' %}
+                            <a class="dropdown-item" href="{% url 'create_task' project.id %}">Add new Task</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {{project.name}}
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{project.name}}</h5>
+          <p class="card-text">{{project.description}}</p>
+          <a href="{% url 'display_task' project.id %}" class="btn btn-primary">View tasks</a>
+        </div>
+        <div class="card-footer text-muted">
+            {% if project.created_at %}
+                {{project.created_at}}
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+        
+</div>
+{% endblock %}
+
+{% block nav %}
+
+{% if request.user.role_id.name == 'Administrators' or request.user.role_id.name == 'Project Managers' %}
+    <li class="nav-item">
+	    <a class="nav-link" href="{% url 'create_project' %}" style="color: white;">Create project</a>
+    </li>
+    <li class="nav-item">
+	    <a class="nav-link" href="{% url 'xrole' %}" style="color: white;">Change roles</a>
+    </li>
+{% endif %}
+
+{% endblock %}

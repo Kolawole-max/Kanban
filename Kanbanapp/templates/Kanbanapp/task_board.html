@@ -1,0 +1,377 @@
+{% extends "Kanbanapp/layout.html" %}
+{% load static %}
+
+{% block title %}
+	<title>Tasks Board</title>
+    
+{% endblock %}
+
+{% block nav %}
+    {% if request.user.role_id.name == 'Administrators' or request.user.role_id.name == 'Project Managers'%}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'create_task' project_id %}" style="color: white;">Add Task</a>
+        </li>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+
+{{ request.user.role_id.name|json_script:"username" }}
+<main class="content">
+    <div class="container p-0">
+
+        <h1 class="h3 mb-3" style="color: white; ">Here, you'll find all tasks for {{project.name}} project</h1>
+
+        <div class="row">
+            <div class="col-12 col-lg-6 col-xl-3">
+                <div class="card card-border-primary">
+                    <div class="card-header">
+                        <h5 class="card-title">Upcoming</h5>
+                        <h6 class="card-subtitle text-muted">Nam pretium turpis et arcu. Duis arcu tortor.</h6>
+                    </div>
+                    <div class="card-body p-3">
+
+                        {% for task in tasks %}
+
+                        {% if task.status_id.name == "Ready to start" %}
+
+                            {% if task.priority.name == 'highest' %}
+                                <div class="card border-danger mb-3">
+                                <div class="card-body text-danger">
+
+                            {% elif task.priority.name == 'high'  %}
+                                <div class="card border-warning mb-3">
+                                <div class="card-body text-warning">
+
+                            {% elif task.priority.name == 'medium'  %}
+
+                                <div class="card border-primary mb-3">
+                                <div class="card-body text-primary">
+
+                            {% elif task.priority.name == 'low'  %}
+
+                                <div class="card border-info mb-3">
+                                <div class="card-body">
+
+                            {% else %}
+
+                                <div class="card border-secondary mb-3">
+                                <div class="card-body text-secondary">
+
+                            {%  endif  %}
+                                    <div class="float-right card-actions">
+                                        <div class="dropdown show">
+                                            <a href="#" data-toggle="dropdown" data-display="static">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
+                                                    <circle cx="12" cy="12" r="1"></circle>
+                                                    <circle cx="19" cy="12" r="1"></circle>
+                                                    <circle cx="5" cy="12" r="1"></circle>
+                                                </svg>
+                                            </a>
+            
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                
+
+                                                {% if request.user.role_id.name == 'Customers' %}
+                                                
+                                                    <div class="dropdown-one">
+                                                        <button class="dropdown-item" id="priority_btn" data-id="5" data-task="{{task.id}}">Request escalation
+                                                            <div class="dropdown-content">
+
+                                                                {% for priority in priorities %}
+                                                                    {% if priority.name != task.priority.name %}
+                                                                        <a class="dropodwn-item" id="priority" data-id={{priority.id}} data-task={{task.id}} href="">{{priority.name}}</a>
+                                                                    {% endif %}
+                                                                {% endfor %}
+
+                                                            </div>
+                                                        </button>
+                                                    </div>
+                                                {% else %}
+                                                    <a class="dropdown-item" id="status" data-id="{{task.id}}" data-status="{{task.status_id.id}}" href=''>Upgrade task progress</a>
+                                                {%  endif  %}
+
+                                                {% if request.user.role_id.name == 'Administrators' and request.user.role_id.name != 'Project Managers' %}
+                                                    <a class="dropdown-item" id="editTask" data-id="{{task.id}}" href='{% url 'edittask' task.id %}'>Edit task</a>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h5 class="card-title">{{ task.name }}</h5>
+                                    <p class="card-text">{{ task.description }}</p>
+                                    <a class="btn btn-outline-primary btn-sm" href="{% url 'task_page' task.id %}">View</a>
+                                </div>
+                            </div>
+                            {%  endif  %}
+                        {% endfor %}
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6 col-xl-3">
+                <div class="card card-border-primary">
+                    <div class="card-header">
+                        <h5 class="card-title">In Progress</h5>
+                        <h6 class="card-subtitle text-muted">Nam pretium turpis et arcu. Duis arcu tortor.</h6>
+                    </div>
+                    <div class="card-body p-3">
+
+                        {% for task in tasks %}
+
+                        {% if task.status_id.name == "In Progress" %}
+
+                            {% if task.priority.name == 'highest' %}
+                                <div class="card border-danger mb-3">
+                                <div class="card-body text-danger">
+
+                            {% elif task.priority.name == 'high'  %}
+                                <div class="card border-warning mb-3">
+                                <div class="card-body text-warning">
+
+                            {% elif task.priority.name == 'medium'  %}
+
+                                <div class="card border-primary mb-3">
+                                <div class="card-body text-primary">
+
+                            {% elif task.priority.name == 'low'  %}
+
+                                <div class="card border-info mb-3">
+                                <div class="card-body">
+
+                            {% else %}
+
+                                <div class="card border-secondary mb-3">
+                                <div class="card-body text-secondary">
+
+                            {%  endif  %}
+                                    <div class="float-right card-actions">
+                                        <div class="dropdown show">
+                                            <a href="#" data-toggle="dropdown" data-display="static">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
+                                                    <circle cx="12" cy="12" r="1"></circle>
+                                                    <circle cx="19" cy="12" r="1"></circle>
+                                                    <circle cx="5" cy="12" r="1"></circle>
+                                                </svg>
+                                            </a>
+            
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                
+
+                                                {% if request.user.role_id.name == 'Customers' %}
+                                                
+                                                    <div class="dropdown-one">
+                                                        <button class="dropdown-item" id="priority_btn" data-id="5" data-task="{{task.id}}">Request escalation
+                                                            <div class="dropdown-content">
+
+                                                                {% for priority in priorities %}
+                                                                    {% if priority.name != task.priority.name %}
+                                                                        <a class="dropodwn-item" id="priority" data-id={{priority.id}} data-task={{task.id}} href="">{{priority.name}}</a>
+                                                                    {% endif %}
+                                                                {% endfor %}
+
+                                                            </div>
+                                                        </button>
+                                                    </div>
+                                                {% else %}
+                                                    <a class="dropdown-item" id="status" data-id="{{task.id}}" data-status="{{task.status_id.id}}" href=''>Upgrade task progress</a>
+                                                {%  endif  %}
+
+                                                {% if request.user.role_id.name == 'Administrators' and request.user.role_id.name != 'Project Managers' %}
+                                                    <a class="dropdown-item" id="editTask" data-id="{{task.id}}" href='{% url 'edittask' task.id %}'>Edit task</a>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h5 class="card-title">{{ task.name }}</h5>
+                                    <p class="card-text">{{ task.description }}</p>
+                                    <a class="btn btn-outline-primary btn-sm" href="{% url 'task_page' task.id %}">View</a>
+                                </div>
+                            </div>
+                            {%  endif  %}
+                        {% endfor %}
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 col-xl-3">
+                <div class="card card-border-primary">
+                    <div class="card-header">
+                        <h5 class="card-title">Testing</h5>
+                        <h6 class="card-subtitle text-muted">Nam pretium turpis et arcu. Duis arcu tortor.</h6>
+                    </div>
+                    <div class="card-body p-3">
+
+                        {% for task in tasks %}
+
+                        {% if task.status_id.name == "Testing" %}
+
+                            {% if task.priority.name == 'highest' %}
+                                <div class="card border-danger mb-3">
+                                <div class="card-body text-danger">
+
+                            {% elif task.priority.name == 'high'  %}
+                                <div class="card border-warning mb-3">
+                                <div class="card-body text-warning">
+
+                            {% elif task.priority.name == 'medium'  %}
+
+                                <div class="card border-primary mb-3">
+                                <div class="card-body text-primary">
+
+                            {% elif task.priority.name == 'low'  %}
+
+                                <div class="card border-info mb-3">
+                                <div class="card-body">
+
+                            {% else %}
+
+                                <div class="card border-secondary mb-3">
+                                <div class="card-body text-secondary">
+
+                            {%  endif  %}
+                                    <div class="float-right card-actions">
+                                        <div class="dropdown show">
+                                            <a href="#" data-toggle="dropdown" data-display="static">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
+                                                    <circle cx="12" cy="12" r="1"></circle>
+                                                    <circle cx="19" cy="12" r="1"></circle>
+                                                    <circle cx="5" cy="12" r="1"></circle>
+                                                </svg>
+                                            </a>
+            
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                
+
+                                                {% if request.user.role_id.name == 'Customers' %}
+                                                
+                                                    <div class="dropdown-one">
+                                                        <button class="dropdown-item" id="priority_btn" data-id="5" data-task="{{task.id}}">Request escalation
+                                                            <div class="dropdown-content">
+
+                                                                {% for priority in priorities %}
+                                                                    {% if priority.name != task.priority.name %}
+                                                                        <a class="dropodwn-item" id="priority" data-id={{priority.id}} data-task={{task.id}} href="">{{priority.name}}</a>
+                                                                    {% endif %}
+                                                                {% endfor %}
+
+                                                            </div>
+                                                        </button>
+                                                    </div>
+                                                {% else %}
+                                                    <a class="dropdown-item" id="status" data-id="{{task.id}}" data-status="{{task.status_id.id}}" href=''>Upgrade task progress</a>
+                                                {%  endif  %}
+
+                                                {% if request.user.role_id.name == 'Administrators' and request.user.role_id.name != 'Project Managers' %}
+                                                    <a class="dropdown-item" id="editTask" data-id="{{task.id}}" href='{% url 'edittask' task.id %}'>Edit task</a>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h5 class="card-title">{{ task.name }}</h5>
+                                    <p class="card-text">{{ task.description }}</p>
+                                    <a class="btn btn-outline-primary btn-sm" href="{% url 'task_page' task.id %}">View</a>
+                                </div>
+                            </div>
+                            {%  endif  %}
+                        {% endfor %}
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 col-xl-3">
+                <div class="card card-border-primary">
+                    <div class="card-header">
+                        <h5 class="card-title">Completed</h5>
+                        <h6 class="card-subtitle text-muted">Nam pretium turpis et arcu. Duis arcu tortor.</h6>
+                    </div>
+                    <div class="card-body p-3">
+
+                        {% for task in tasks %}
+
+                        {% if task.status_id.name == "Completed" %}
+
+                            {% if task.priority.name == 'highest' %}
+                                <div class="card border-danger mb-3">
+                                <div class="card-body text-danger">
+
+                            {% elif task.priority.name == 'high'  %}
+                                <div class="card border-warning mb-3">
+                                <div class="card-body text-warning">
+
+                            {% elif task.priority.name == 'medium'  %}
+
+                                <div class="card border-primary mb-3">
+                                <div class="card-body text-primary">
+
+                            {% elif task.priority.name == 'low'  %}
+
+                                <div class="card border-info mb-3">
+                                <div class="card-body">
+
+                            {% else %}
+
+                                <div class="card border-secondary mb-3">
+                                <div class="card-body text-secondary">
+
+                            {%  endif  %}
+                                    <div class="float-right card-actions">
+                                        <div class="dropdown show">
+                                            <a href="#" data-toggle="dropdown" data-display="static">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
+                                                    <circle cx="12" cy="12" r="1"></circle>
+                                                    <circle cx="19" cy="12" r="1"></circle>
+                                                    <circle cx="5" cy="12" r="1"></circle>
+                                                </svg>
+                                            </a>
+            
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                
+
+                                                {% if request.user.role_id.name == 'Customers' %}
+                                                
+                                                    <div class="dropdown-one">
+                                                        <button class="dropdown-item" id="priority_btn" data-id="5" data-task="{{task.id}}">Request escalation
+                                                            <div class="dropdown-content">
+
+                                                                {% for priority in priorities %}
+                                                                    {% if priority.name != task.priority.name %}
+                                                                        <a class="dropodwn-item" id="priority" data-id={{priority.id}} data-task={{task.id}} href="">{{priority.name}}</a>
+                                                                    {% endif %}
+                                                                {% endfor %}
+
+                                                            </div>
+                                                        </button>
+                                                    </div>
+                                                {%  endif  %}
+
+                                                {% if request.user.role_id.name == 'Administrators' and request.user.role_id.name != 'Project Managers' %}
+                                                    <a class="dropdown-item" id="editTask" data-id="{{task.id}}" href='{% url 'edittask' task.id %}'>Edit task</a>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h5 class="card-title">{{ task.name }}</h5>
+                                    <p class="card-text">{{ task.description }}</p>
+                                    <a class="btn btn-outline-primary btn-sm" href="{% url 'task_page' task.id %}">View</a>
+                                </div>
+                            </div>
+                            {%  endif  %}
+                        {% endfor %}
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'Kanbanapp/task_board.js' %}"></script>
+{% endblock %}
