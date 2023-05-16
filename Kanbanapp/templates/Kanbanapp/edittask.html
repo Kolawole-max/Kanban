@@ -1,0 +1,60 @@
+{% extends "Kanbanapp/layout.html" %}
+{% load static %}
+
+{% block title %}
+	<title>Edit task</title>
+{% endblock %}
+
+{% block body %}
+
+<section class="ftco-section" style="margin-top: -80px">
+		
+
+	<div class="container">
+
+		<div class="row justify-content-center">
+
+			<div class="col-md-6 col-lg-4">
+				<div class="login-wrap p-0">
+					<h3 class="mb-4 text-center">Edit {{task.name}}</h3>
+
+					<form action=" url 'edittask' task.id %}" method="POST" class="signin-form">
+						{% csrf_token %}
+
+                        <div class="form-group">
+							<input type="text" class="form-control" name="project_id" value='{{task.project_id.name}}' readonly>
+						</div>
+
+						<div class="form-group">
+							<input type="text" class="form-control" name="name" value='{{task.name}}'>
+						</div>
+
+						<div class="form-group">
+							<input type="text" class="form-control" name="description" value='{{task.description}}'>
+						</div>
+
+                        <div class="form-group">
+							<input type="number" class="form-control" placeholder="Enter estimate time" name="estimate_time" value='{{ task.estimate_time }}'>
+						</div>
+
+                        <div class="form-group">
+							<select class="form-select" multiple aria-label="multiple select example"  name="assignee" id="assignee">
+                                {% for user in users %}
+                                    <option value={{user.id}}>{{ user.first_name }} as {{user.role_id.name}}</option>
+                                {% endfor %}
+                            </select>
+						</div>	
+						
+						<div class="form-group">
+							<button type="submit" class="form-control btn btn-primary submit px-3">Edit task</button>
+						</div>
+
+					</form>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+</section>
+{% endblock %}
